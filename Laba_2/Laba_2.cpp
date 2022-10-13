@@ -12,83 +12,81 @@ using namespace std;
 
 
 int main() {
-	setlocale(LC_ALL, "Rus");// чтоб в консоли был русский язык
-	srand(time(0));// для того, чтоб в генераторе чисел каждый раз при запуске прогаммы были разные числа
-	int n;// кол-во потокв
-	int N;// рамер массива
-	int* a;// указатель на массив
-	bool fail = false;// для проверки ввода
+	setlocale(LC_ALL, "Rus");
+	srand(time(0));
+	int n;
+	int N;
+	int* a;
+	bool fail = false;
 
 	do {
 		fail = false;
-		cout << "Введите размер массива = ";// текствое сообщение
-		cin >> N;// ввод перменной
-		if (cin.fail() || N <= 0) {// если не может преобразовать 
+		cout << "Введите размер массива = ";
+		cin >> N;
+		if (cin.fail() || N <= 0) {
 			cout << "Вы ввели не число или число меньше нуля. Повторите ввод заново!" << endl;
 			fail = true;
 		}
-		cin.clear();// сбрасывает то, что введено в потоке
-		cin.ignore();//пропускает для следущего ввода в потоке
+		cin.clear();
+		cin.ignore();
 	} while (fail);
 
 	do {
 		fail = false;
 		cout << "Введите кол-во потоков = ";
-		cin >> n;// вводим кол-во потоков
+		cin >> n;
 		if (cin.fail() || n <= 0) {
 			cout << "Вы ввели не число или число меньше/равное нулю. Повторите ввод заново!" << endl;
 			fail = true;
 		}
 		cin.clear();
 		cin.ignore();
-	} while (fail);	
-
-	a = new int[N];// объявляем массив размерность Эн
+	} while (fail);
+	a = new int[N];// 
 
 	for (int i = 0; i < N; i++) {
-		a[i] = 100 + rand() % 10000000;// запоняем массив
+		a[i] = 100 + rand() % 10000000;
 	}
-	
-	double time = omp_get_wtime();// вкл. счетчик времени
-	omp_set_dynamic(false);//отключение динамической регулировки потоков, не можем во время выполнения программы регулировать кол-во потокв
-	omp_set_num_threads(n);// определяем сколько потоков, записывается введеная перменная 
 
-	long unsigned int summa = 0;// результат выполнения
-	long unsigned int sum = 0;// результат выполнения
+	double time = omp_get_wtime();
+	omp_set_dynamic(false);
+	omp_set_num_threads(n);
 
-#pragma omp parallel firstprivate(sum) shared(summa) // выполнение в первую очередь и параллельно, второе в общем потоке без парарллельного выполнения
+	long unsigned int summa = 0;
+	long unsigned int sum = 0;
+
+#pragma omp parallel firstprivate(sum) shared(summa) 
 	{
 		sum = 0;
 
-#pragma omp for// цикл фор выполняется парарллельно
+#pragma omp for
 		for (int i = 0; i < N; i++)
 		{
 			if (i % 2 == 0)
 			{
-				sum += a[i];// чет. индк склыдываем
+				sum += a[i];
 			}
 			else
 			{
-				sum -= a[i];// нечетный вычитаем
+				sum -= a[i];
 			}
 		}
-#pragma omp critical// критическая область (выполняется в общем потоке), для того чтоб сложить все результаты
+#pragma omp critical
 		{
 			summa += sum;
 
 		}
 	}
 	cout << "Значение выражения с потоками = " << summa << "\n"; // выводим результат
-	time = omp_get_wtime() - time;// считаем время выполнения программы
-	cout << "Время вычислений = " << time << "\n";// выводим время
+	time = omp_get_wtime() - time;
+	cout << "Время вычислений = " << time << "\n";
 
-	//-----------------------------
 
-	time = omp_get_wtime();// запускаем таймер
+	time = omp_get_wtime();
 
-	summa = 0;// обнулем сумму
+	summa = 0;
 
-#pragma omp parallel for reduction (+: summa)  // расспараллеливаем цикл фор, summa - редукционная переменная ( с котрой выполняется действие сложение)
+#pragma omp parallel for reduction (+: summa)  
 
 	for (int i = 0; i < N; i++)
 	{
@@ -102,17 +100,16 @@ int main() {
 		}
 	}
 
-	time = omp_get_wtime() - time;// вычислем время выполнения
-	
-	cout << "Значение выражения с потоками через редукцию = " << summa << "\n";// выводим результат
-	cout << "Время вычислений = " << time << "\n";// выводим время
+	time = omp_get_wtime() - time;
 
-	//-----------------------------
+	cout << "Значение выражения с потоками через редукцию = " << summa << "\n";
+	cout << "Время вычислений = " << time << "\n";
 
-	time = omp_get_wtime();// запускаем таймер
 
-	summa = 0;// обнуляем резуьтат
-	// выполнение твоего задания без потоков
+	time = omp_get_wtime();
+
+	summa = 0;
+
 	for (int i = 0; i < N; i++)
 	{
 		if (i % 2 == 0)
@@ -125,11 +122,9 @@ int main() {
 		}
 	}
 
-	time = omp_get_wtime() - time;// считаем время выполнения
-	cout << "Значение выражения без потоков = " << summa << "\n"; // выводим резульат
-	cout << "Время вычислений = " << time << "\n";// выводим время выполнения
-
-	//---------------------
+	time = omp_get_wtime() - time;
+	cout << "Значение выражения без потоков = " << summa << "\n";
+	cout << "Время вычислений = " << time << "\n";
 
 
 	system("pause");
