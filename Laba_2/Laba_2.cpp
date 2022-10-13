@@ -42,7 +42,7 @@ int main() {
 		cin.clear();
 		cin.ignore();
 	} while (fail);
-	a = new int[N];// 
+	a = new int[N];
 
 	for (int i = 0; i < N; i++) {
 		a[i] = 100 + rand() % 10000000;
@@ -77,7 +77,7 @@ int main() {
 
 		}
 	}
-	cout << "Значение выражения с потоками = " << summa << "\n"; // выводим результат
+	cout << "Значение выражения с потоками = " << summa << "\n"; 
 	time = omp_get_wtime() - time;
 	cout << "Время вычислений = " << time << "\n";
 
